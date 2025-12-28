@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                {% if profile and profile.image %}
+                    <img src="{{ profile.image.url }}" alt="Avatar" class="avatar-img">
+                {% else %}
+                    <div class="avatar-placeholder">
+                        <span class="avatar-initials">
+                            {% if profile and profile.first_name %}{{ profile.first_name|first }}{% endif %}
+                            {% if profile and profile.last_name %}{{ profile.last_name|first }}{% endif %}
+                            {% if not profile %}{{ user.email|first|upper }}{% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="profile-info-header">
+                <h1 class="profile-name">
+                    {% if profile and profile.first_name or profile.last_name %}
+                        {{ profile.first_name }} {{ profile.last_name }}
+                    {% else %}
+                        {{ user.email }}
+                    {% endif %}
+                </h1>
+                <p class="profile-email">{{ user.email }}</p>
+            </div>
+        </div>
+
+        <!-- Task Statistics -->
+        <div class="profile-stats">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">📋</div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ total_tasks }}</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+            </div>
+            <div class="stat-card stat-completed">
+                <div class="stat-icon">✅</div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ completed_tasks }}</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+            <div class="stat-card stat-pending">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-content">
+                    <div class="stat-number">{{ pending_tasks }}</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-tabs">
+            <button class="tab-btn active" onclick="showTab('info')">Personal Information</button>
+            <button class="tab-btn" onclick="showTab('profile')">Profile Details</button>
+        </div>
+
+        <!-- Tab: Personal Information -->
+        <div id="info-tab" class="tab-content active">
+            <div class="info-section">
+                <div class="info-item">
+                    <span class="info-label">Email:</span>
+                    <span class="info-value">{{ user.email }}</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Account Status:</span>
+                    <span class="info-value">
+                        {% if user.is_verified %}
+                            <span class="badge badge-success">Verified</span>
+                        {% else %}
+                            <span class="badge badge-warning">Not Verified</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Date Joined:</span>
+                    <span class="info-value">{{ user.created_date|date:"F d, Y" }}</span>
+                </div>
+                {% if user.last_login %}
+                <div class="info-item">
+                    <span class="info-label">Last Login:</span>
+                    <span class="info-value">{{ user.last_login|date:"F d, Y H:i" }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Tab: Profile Details -->
+        <div id="profile-tab" class="tab-content">
+            <div class="info-section">
+                {% if profile %}
+                    <div class="info-item">
+                        <span class="info-label">First Name:</span>
+                        <span class="info-value">{{ profile.first_name|default:"Not set" }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Last Name:</span>
+                        <span class="info-value">{{ profile.last_name|default:"Not set" }}</span>
+                    </div>
+                    {% if profile.description %}
+                    <div class="info-item info-description">
+                        <span class="info-label">Description:</span>
+                        <span class="info-value">{{ profile.description }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="info-item">
+                        <span class="info-label">Profile Created:</span>
+                        <span class="info-value">{{ profile.created_date|date:"F d, Y" }}</span>
+                    </div>
+                    {% if profile.updated_date %}
+                    <div class="info-item">
+                        <span class="info-label">Last Updated:</span>
+                        <span class="info-value">{{ profile.updated_date|date:"F d, Y H:i" }}</span>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="info-item">
+                        <span class="info-value">Profile not found. Please contact administrator.</span>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(tabName) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remove active class from all buttons
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Show selected tab
+    document.getElementById(tabName + '-tab').classList.add('active');
+    
+    // Add active class to clicked button
+    event.target.classList.add('active');
+}
+</script>
+{% endblock %}

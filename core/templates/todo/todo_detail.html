@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ todo.title }}{% endblock %}
+
+{% block content %}
+<div class="todo-detail-container">
+    <div class="todo-detail-card">
+        <div class="detail-header">
+            <div class="detail-header-left">
+                <a href="{% url 'todo:task_list' %}" class="btn-back">← Back to List</a>
+                <h1 class="detail-title">{{ todo.title }}</h1>
+            </div>
+            <div class="detail-actions">
+                <a href="{% url 'todo:task_edit' todo.id %}" class="btn btn-primary">
+                    ✏️ Edit
+                </a>
+                <form method="post" action="{% url 'todo:delete_task' todo.id %}" class="delete-form-inline" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ todo.id }}">
+                    <button type="submit" class="btn btn-danger">
+                        🗑️ Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="detail-content">
+            <div class="detail-badges">
+                <span class="badge badge-{{ todo.priority }} badge-large">
+                    {% if todo.priority == 'high' %}🔴 High Priority
+                    {% elif todo.priority == 'medium' %}🟡 Medium Priority
+                    {% else %}🟢 Low Priority
+                    {% endif %}
+                </span>
+                <span class="badge badge-{{ todo.status }} badge-large">
+                    {% if todo.status == 'completed' %}✅ Completed
+                    {% elif todo.status == 'in_progress' %}🔄 In Progress
+                    {% else %}⏳ Pending
+                    {% endif %}
+                </span>
+                {% if todo.completed %}
+                    <span class="badge badge-completed badge-large">
+                        ✅ Completed
+                    </span>
+                {% endif %}
+            </div>
+
+            {% if todo.description %}
+                <div class="detail-section">
+                    <h3 class="detail-section-title">Description</h3>
+                    <p class="detail-description">{{ todo.description|linebreaks }}</p>
+                </div>
+            {% endif %}
+
+            <div class="detail-meta">
+                <div class="meta-item">
+                    <span class="meta-label">📅 Created Date:</span>
+                    <span class="meta-value">{{ todo.created_at|date:"Y/m/d H:i" }}</span>
+                </div>
+                {% if todo.updated_at %}
+                    <div class="meta-item">
+                        <span class="meta-label">🔄 Last Updated:</span>
+                        <span class="meta-value">{{ todo.updated_at|date:"Y/m/d H:i" }}</span>
+                    </div>
+                {% endif %}
+                {% if todo.due_date %}
+                    <div class="meta-item">
+                        <span class="meta-label">⏰ Due Date:</span>
+                        <span class="meta-value {% if todo.is_overdue %}overdue{% endif %}">
+                            {{ todo.due_date|date:"Y/m/d" }}
+                            {% if todo.is_overdue %}
+                                <span class="overdue-badge">(Overdue)</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="detail-toggle">
+                <form method="post" action="{% url 'todo:toggel_task' todo.id %}" class="toggle-form-large">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value="{{ todo.id }}">
+                    <label class="toggle-label">
+                        <input 
+                            type="checkbox" 
+                            class="todo-checkbox-large" 
+                            {% if todo.completed %}checked{% endif %}
+                            onchange="this.form.submit()"
+                        >
+                        <span class="toggle-text">
+                            {% if todo.completed %}
+                                ✅ This task is completed
+                            {% else %}
+                                ⏳ This task is not completed yet
+                            {% endif %}
+                        </span>
+                    </label>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

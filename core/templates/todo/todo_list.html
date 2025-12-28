@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+<div class="todo-container">
+    <div class="todo-header">
+        <h1 class="todo-title">My Tasks</h1>
+        <a href="{% url 'todo:todo_create' %}" class="btn btn-primary">
+            ➕ New Task
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="todo-filters">
+        <form method="get" class="filter-form">
+            <select name="status" class="filter-select">
+                <option value="">All Statuses</option>
+                <option value="pending" {% if request.GET.status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="in_progress" {% if request.GET.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                <option value="completed" {% if request.GET.status == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+            <select name="priority" class="filter-select">
+                <option value="">All Priorities</option>
+                <option value="high" {% if request.GET.priority == 'high' %}selected{% endif %}>High</option>
+                <option value="medium" {% if request.GET.priority == 'medium' %}selected{% endif %}>Medium</option>
+                <option value="low" {% if request.GET.priority == 'low' %}selected{% endif %}>Low</option>
+            </select>
+            <input 
+                type="text" 
+                name="search" 
+                class="search-input" 
+                placeholder="Search..."
+                value="{{ request.GET.search }}"
+            >
+            <button type="submit" class="btn btn-filter">🔍 Filter</button>
+            {% if request.GET.status or request.GET.priority or request.GET.search %}
+                <a href="{% url 'todo:task_list' %}" class="btn btn-clear">Clear Filters</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <!-- Todo List -->
+    <div class="todo-list">
+        {% if tasks %}
+            {% for todo in tasks %}
+                <div class="todo-item-card {% if todo.complete %}completed{% endif %}">
+                    <div class="todo-card-header">
+                        <div class="todo-card-title-section">
+                            <form method="post" action="{% url 'todo:toggel_task' todo.id%}" class="toggle-form-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="task_id" value="{{ todo.id }}">
+                                <button type="submit" class="todo-toggle-btn {% if todo.complete %}completed{% endif %}" title="{% if todo.complete %}Mark as incomplete{% else %}Mark as complete{% endif %}">
+                                    {% if todo.complete %}
+                                        ✅
+                                    {% else %}
+                                        ⭕
+                                    {% endif %}
+                                </button>
+                            </form>
+                            <h3 class="todo-item-title-card">
+                                <a href="{% url 'todo:todo_detail' todo.id  %}" class="todo-link">
+                                    {{ todo.title }}
+                                </a>
+                            </h3>
+                        </div>
+                        <div class="todo-card-actions">
+                            <a href="{% url 'todo:task_edit' todo.id %}" class="btn-action-card btn-edit-card" title="Edit">
+                                ✏️
+                            </a>
+                            <form method="post" action="{% url 'todo:delete_task' todo.id  %}" class="delete-form-inline" onsubmit="return confirm('Are you sure you want to delete this task?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="task_id" value="{{ todo.id }}">
+                                <button type="submit" class="btn-action-card btn-delete-card" title="Delete">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    {% if todo.description %}
+                        <p class="todo-description-card">{{ todo.description|truncatewords:15 }}</p>
+                    {% endif %}
+                    
+                    <div class="todo-card-badges">
+                        <span class="badge-card {% if todo.complete %}badge-completed{% else %}badge-pending{% endif %}">
+                            {% if todo.complete %}✅ Completed
+                            {% else %}⏳ Pending
+                            {% endif %}
+                        </span>
+                    </div>
+                    
+                    <div class="todo-card-footer">
+                        <span class="todo-date-card">
+                            📅 {{ todo.created_date|date:"M d, Y" }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h3 class="empty-title">No Tasks Found</h3>
+                <p class="empty-text">
+                    {% if request.GET.status or request.GET.priority or request.GET.search %}
+                        No tasks found with the selected filters.
+                    {% else %}
+                        You haven't created any tasks yet. Create your first task!
+                    {% endif %}
+                </p>
+                <a href="{% url 'todo:todo_create' %}" class="btn btn-primary">Create New Task</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">
+                    Previous
+                </a>
+            {% else %}
+                <span class="pagination-btn disabled">Previous</span>
+            {% endif %}
+
+            <span class="pagination-info">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.priority %}&priority={{ request.GET.priority }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}" class="pagination-btn">
+                    Next
+                </a>
+            {% else %}
+                <span class="pagination-btn disabled">Next</span>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
