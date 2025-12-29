@@ -88,4 +88,10 @@ def save_profile(sender, instance, created, **kwargs):
     Signal for post creating a user which activates when a user being created ONLY
     """
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.get_or_create(
+            user=instance,
+            defaults={
+                'first_name': '',
+                'last_name': '',
+            }
+        )
