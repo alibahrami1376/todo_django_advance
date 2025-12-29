@@ -5,9 +5,9 @@
 {% block content %}
 <div class="todo-form-container">
     <div class="todo-form-card">
-        <div class="form-header">description
+        <div class="form-header">
             <h1 class="form-title">Edit Task</h1>
-            <a href="" class="btn-back">← Back</a>
+            <a href="{% url 'todo:task_list' %}" class="btn-back">← Back</a>
         </div>
 
         <form method="post" class="todo-form">
@@ -56,66 +56,6 @@
                 {% if form.description.errors %}
                     <span class="error-message">
                         {% for error in form.description.errors %}{{ error }}{% endfor %}
-                    </span>
-                {% endif %}
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="{{ form.priority.id_for_label }}" class="form-label">
-                        Priority
-                    </label>
-                    <select 
-                        name="{{ form.priority.name }}" 
-                        id="{{ form.priority.id_for_label }}"
-                        class="form-select {% if form.priority.errors %}error{% endif %}"
-                    >
-                        <option value="low" {% if form.priority.value == 'low' or task.priority == 'low' %}selected{% endif %}>🟢 Low</option>
-                        <option value="medium" {% if form.priority.value == 'medium' or task.priority == 'medium' %}selected{% endif %}>🟡 Medium</option>
-                        <option value="high" {% if form.priority.value == 'high' or task.priority == 'high' %}selected{% endif %}>🔴 High</option>
-                    </select>
-                    {% if form.priority.errors %}
-                        <span class="error-message">
-                            {% for error in form.priority.errors %}{{ error }}{% endfor %}
-                        </span>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.status.id_for_label }}" class="form-label">
-                        Status
-                    </label>
-                    <select 
-                        name="{{ form.status.name }}" 
-                        id="{{ form.status.id_for_label }}"
-                        class="form-select {% if form.status.errors %}error{% endif %}"
-                    >
-                        <option value="pending" {% if form.status.value == 'pending' or task.status == 'pending' %}selected{% endif %}>⏳ Pending</option>
-                        <option value="in_progress" {% if form.status.value == 'in_progress' or task.status == 'in_progress' %}selected{% endif %}>🔄 In Progress</option>
-                        <option value="completed" {% if form.status.value == 'completed' or task.status == 'completed' %}selected{% endif %}>✅ Completed</option>
-                    </select>
-                    {% if form.status.errors %}
-                        <span class="error-message">
-                            {% for error in form.status.errors %}{{ error }}{% endfor %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.due_date.id_for_label }}" class="form-label">
-                    Due Date
-                </label>
-                <input 
-                    type="date" 
-                    name="{{ form.due_date.name }}" 
-                    id="{{ form.due_date.id_for_label }}"
-                    class="form-input {% if form.due_date.errors %}error{% endif %}"
-                    value="{% if form.due_date.value %}{{ form.due_date.value }}{% elif todo.due_date %}{{ todo.due_date|date:'Y-m-d' }}{% endif %}"
-                >
-                {% if form.due_date.errors %}
-                    <span class="error-message">
-                        {% for error in form.due_date.errors %}{{ error }}{% endfor %}
                     </span>
                 {% endif %}
             </div>

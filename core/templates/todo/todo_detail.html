@@ -26,21 +26,13 @@
 
         <div class="detail-content">
             <div class="detail-badges">
-                <span class="badge badge-{{ todo.priority }} badge-large">
-                    {% if todo.priority == 'high' %}🔴 High Priority
-                    {% elif todo.priority == 'medium' %}🟡 Medium Priority
-                    {% else %}🟢 Low Priority
-                    {% endif %}
-                </span>
-                <span class="badge badge-{{ todo.status }} badge-large">
-                    {% if todo.status == 'completed' %}✅ Completed
-                    {% elif todo.status == 'in_progress' %}🔄 In Progress
-                    {% else %}⏳ Pending
-                    {% endif %}
-                </span>
-                {% if todo.completed %}
+                {% if todo.complete %}
                     <span class="badge badge-completed badge-large">
                         ✅ Completed
+                    </span>
+                {% else %}
+                    <span class="badge badge-pending badge-large">
+                        ⏳ Pending
                     </span>
                 {% endif %}
             </div>
@@ -55,40 +47,29 @@
             <div class="detail-meta">
                 <div class="meta-item">
                     <span class="meta-label">📅 Created Date:</span>
-                    <span class="meta-value">{{ todo.created_at|date:"Y/m/d H:i" }}</span>
+                    <span class="meta-value">{{ todo.created_date|date:"Y/m/d H:i" }}</span>
                 </div>
-                {% if todo.updated_at %}
+                {% if todo.updated_date %}
                     <div class="meta-item">
                         <span class="meta-label">🔄 Last Updated:</span>
-                        <span class="meta-value">{{ todo.updated_at|date:"Y/m/d H:i" }}</span>
-                    </div>
-                {% endif %}
-                {% if todo.due_date %}
-                    <div class="meta-item">
-                        <span class="meta-label">⏰ Due Date:</span>
-                        <span class="meta-value {% if todo.is_overdue %}overdue{% endif %}">
-                            {{ todo.due_date|date:"Y/m/d" }}
-                            {% if todo.is_overdue %}
-                                <span class="overdue-badge">(Overdue)</span>
-                            {% endif %}
-                        </span>
+                        <span class="meta-value">{{ todo.updated_date|date:"Y/m/d H:i" }}</span>
                     </div>
                 {% endif %}
             </div>
 
             <div class="detail-toggle">
-                <form method="post" action="{% url 'todo:toggel_task' todo.id %}" class="toggle-form-large">
+                <form method="post" action="{% url 'todo:toggle_task' todo.id %}" class="toggle-form-large">
                     {% csrf_token %}
                     <input type="hidden" name="task_id" value="{{ todo.id }}">
                     <label class="toggle-label">
                         <input 
                             type="checkbox" 
                             class="todo-checkbox-large" 
-                            {% if todo.completed %}checked{% endif %}
+                            {% if todo.complete %}checked{% endif %}
                             onchange="this.form.submit()"
                         >
                         <span class="toggle-text">
-                            {% if todo.completed %}
+                            {% if todo.complete %}
                                 ✅ This task is completed
                             {% else %}
                                 ⏳ This task is not completed yet

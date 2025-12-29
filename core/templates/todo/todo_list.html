@@ -47,7 +47,7 @@
                 <div class="todo-item-card {% if todo.complete %}completed{% endif %}">
                     <div class="todo-card-header">
                         <div class="todo-card-title-section">
-                            <form method="post" action="{% url 'todo:toggel_task' todo.id%}" class="toggle-form-inline">
+                            <form method="post" action="{% url 'todo:toggle_task' todo.id%}" class="toggle-form-inline">
                                 {% csrf_token %}
                                 <input type="hidden" name="task_id" value="{{ todo.id }}">
                                 <button type="submit" class="todo-toggle-btn {% if todo.complete %}completed{% endif %}" title="{% if todo.complete %}Mark as incomplete{% else %}Mark as complete{% endif %}">

@@ -32,7 +32,7 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         return "/"
 
-class CustoumLogoutView(LogoutView):
+class CustomLogoutView(LogoutView):
     next_page = "/"
     
 class ProfileView(LoginRequiredMixin, TemplateView):

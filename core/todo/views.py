@@ -5,6 +5,7 @@ from django.views.generic.edit import (
     UpdateView,
     DeleteView,    
 )
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -39,11 +40,13 @@ class TaskUpdateView(LoginRequiredMixin,UpdateView):
     form_class = TaskUpdateForm
     template_name = "todo/todo_edit.html"
 
-class TaskToggelView(LoginRequiredMixin,View):
-    
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user.profile)
+
+class TaskToggleView(LoginRequiredMixin,View):
 
     def post(self, request, pk, *args, **kwargs):
-        task = Task.objects.get(pk=pk,user=self.request.user.profile)
+        task = get_object_or_404(Task,pk=pk,user=self.request.user.profile)
         task.complete = not task.complete
         task.save()
         return redirect("todo:task_list")
