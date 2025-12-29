@@ -125,10 +125,8 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 
-# مسیر واقعی فولدر استاتیک برای dev
 STATICFILES_DIRS = [BASE_DIR / "static"]  
 
-# فقط برای production / collectstatic
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
 MEDIA_URL = "/media/"

@@ -45,7 +45,7 @@ class ProfileView(LoginRequiredMixin, TemplateView):
         # Get user's profile
         try:
             profile = user.profile
-        except:
+        except profile.DoesNotExist:
             profile = None
         
         # Get task statistics
