@@ -13,7 +13,11 @@ from django.views import View
 from .models import Task
 from todo.forms import TaskUpdateForm
 
-class TaskCreate(LoginRequiredMixin, CreateView):
+class TaskCreateView(LoginRequiredMixin, CreateView):
+    """
+    View to create a new task,
+    automatically linking it to the logged-in user's profile
+    """
     model = Task
     fields = ['title', 'description']  
     template_name = 'todo/todo_create.html'
@@ -21,9 +25,14 @@ class TaskCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user.profile 
-        return super(TaskCreate, self).form_valid(form)
+        return super(TaskCreateView, self).form_valid(form)
 
 class TaskDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    View to delete a task,
+    restricted to tasks of the logged-in user's profile
+    GET requests are treated as POST to allow direct deletion
+    """
     model = Task
     context_object_name = "task"
     success_url = reverse_lazy("todo:task_list")
@@ -35,6 +44,10 @@ class TaskDeleteView(LoginRequiredMixin, DeleteView):
         return self.model.objects.filter(user=self.request.user.profile)
 
 class TaskUpdateView(LoginRequiredMixin,UpdateView):
+    """
+    View to update a task,
+    restricted to the logged-in user's tasks
+    """
     model = Task
     success_url = reverse_lazy("todo:task_list")
     form_class = TaskUpdateForm
@@ -44,7 +57,9 @@ class TaskUpdateView(LoginRequiredMixin,UpdateView):
         return self.model.objects.filter(user=self.request.user.profile)
 
 class TaskToggleView(LoginRequiredMixin,View):
-
+    """
+    View to toggle the completion status of a task
+    """
     def post(self, request, pk, *args, **kwargs):
         task = get_object_or_404(Task,pk=pk,user=self.request.user.profile)
         task.complete = not task.complete
@@ -52,6 +67,9 @@ class TaskToggleView(LoginRequiredMixin,View):
         return redirect("todo:task_list")
 
 class TaskDetailView(LoginRequiredMixin,DetailView):
+    """
+    View to show task details for the logged-in user
+    """
     model = Task
     template_name = "todo/todo_detail.html"
     context_object_name = "todo"
@@ -59,8 +77,10 @@ class TaskDetailView(LoginRequiredMixin,DetailView):
     def get_queryset(self):
         return self.model.objects.filter(user=self.request.user.profile)
     
-
-class TaskList(LoginRequiredMixin,ListView):
+class TaskListView(LoginRequiredMixin,ListView):
+    """
+    # View to list all tasks of the logged-in user
+    """
     model = Task
     context_object_name = "tasks"
     template_name = "todo/todo_list.html"

@@ -6,7 +6,7 @@
 <div class="todo-container">
     <div class="todo-header">
         <h1 class="todo-title">My Tasks</h1>
-        <a href="{% url 'todo:todo_create' %}" class="btn btn-primary">
+        <a href="{% url 'todo:create_task' %}" class="btn btn-primary">
             ➕ New Task
         </a>
     </div>
@@ -59,13 +59,13 @@
                                 </button>
                             </form>
                             <h3 class="todo-item-title-card">
-                                <a href="{% url 'todo:todo_detail' todo.id  %}" class="todo-link">
+                                <a href="{% url 'todo:detail_task' todo.id  %}" class="todo-link">
                                     {{ todo.title }}
                                 </a>
                             </h3>
                         </div>
                         <div class="todo-card-actions">
-                            <a href="{% url 'todo:task_edit' todo.id %}" class="btn-action-card btn-edit-card" title="Edit">
+                            <a href="{% url 'todo:edit_task' todo.id %}" class="btn-action-card btn-edit-card" title="Edit">
                                 ✏️
                             </a>
                             <form method="post" action="{% url 'todo:delete_task' todo.id  %}" class="delete-form-inline" onsubmit="return confirm('Are you sure you want to delete this task?');">
@@ -108,7 +108,7 @@
                         You haven't created any tasks yet. Create your first task!
                     {% endif %}
                 </p>
-                <a href="{% url 'todo:todo_create' %}" class="btn btn-primary">Create New Task</a>
+                <a href="{% url 'todo:create_task' %}" class="btn btn-primary">Create New Task</a>
             </div>
         {% endif %}
     </div>
