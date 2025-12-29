@@ -1,9 +1,9 @@
-from django.db import models
 from django.contrib.auth.models import (
     BaseUserManager,
     AbstractBaseUser,
     PermissionsMixin,
 )
+from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,7 +13,6 @@ class UserManager(BaseUserManager):
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
-
     def create_user(self, email, password, **extra_fields):
         """
         Create and save a User with the given email and password and extra data.
@@ -41,7 +40,6 @@ class UserManager(BaseUserManager):
             raise ValueError(_("Superuser must have is_superuser=True."))
         return self.create_user(email, password, **extra_fields)
 
-
 class User(AbstractBaseUser, PermissionsMixin):
     """
     Custom User Model for authentication management through email address instead of username
@@ -52,24 +50,20 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_verified = models.BooleanField(default=False)
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []
-
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = []
     objects = UserManager()
 
     def __str__(self):
         return self.email
     
-
 class Profile(models.Model):
     """
     Profile class for each user which is being created to hold the information
     """
-
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=250)
     last_name = models.CharField(max_length=250)
@@ -80,7 +74,6 @@ class Profile(models.Model):
 
     def __str__(self):
         return self.user.email
-
 
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, created, **kwargs):
