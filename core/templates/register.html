@@ -12,7 +12,7 @@
     <div class="auth-card">
         <div class="auth-header">
             <h1 class="auth-title">Create Account</h1>
-            <p class="auth-subtitle">Please enter your information</p>
+            <p class="auth-subtitle">Enter your email and password</p>
         </div>
 
         <form method="post" class="auth-form" action="{% url 'accounts:register' %}">
@@ -25,68 +25,6 @@
                     {% endfor %}
                 </div>
             {% endif %}
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="{{ form.first_name.id_for_label }}" class="form-label">
-                        First Name
-                    </label>
-                    <input 
-                        type="text" 
-                        name="{{ form.first_name.name }}" 
-                        id="{{ form.first_name.id_for_label }}"
-                        class="form-input {% if form.first_name.errors %}error{% endif %}"
-                        placeholder="Enter your first name"
-                        value="{{ form.first_name.value|default:'' }}"
-                        required
-                    >
-                    {% if form.first_name.errors %}
-                        <span class="error-message">
-                            {% for error in form.first_name.errors %}{{ error }}{% endfor %}
-                        </span>
-                    {% endif %}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ form.last_name.id_for_label }}" class="form-label">
-                        Last Name
-                    </label>
-                    <input 
-                        type="text" 
-                        name="{{ form.last_name.name }}" 
-                        id="{{ form.last_name.id_for_label }}"
-                        class="form-input {% if form.last_name.errors %}error{% endif %}"
-                        placeholder="Enter your last name"
-                        value="{{ form.last_name.value|default:'' }}"
-                        required
-                    >
-                    {% if form.last_name.errors %}
-                        <span class="error-message">
-                            {% for error in form.last_name.errors %}{{ error }}{% endfor %}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="{{ form.username.id_for_label }}" class="form-label">
-                    Username
-                </label>
-                <input 
-                    type="text" 
-                    name="{{ form.username.name }}" 
-                    id="{{ form.username.id_for_label }}"
-                    class="form-input {% if form.username.errors %}error{% endif %}"
-                    placeholder="Choose a username"
-                    value="{{ form.username.value|default:'' }}"
-                    required
-                >
-                {% if form.username.errors %}
-                    <span class="error-message">
-                        {% for error in form.username.errors %}{{ error }}{% endfor %}
-                    </span>
-                {% endif %}
-            </div>
 
             <div class="form-group">
                 <label for="{{ form.email.id_for_label }}" class="form-label">
