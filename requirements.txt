@@ -5,3 +5,5 @@ pytz
 sqlparse
 typing_extensions
 python-decouple
+djangorestframework==3.14.0
+django-filter  

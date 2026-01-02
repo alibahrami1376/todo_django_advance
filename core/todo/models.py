@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.urls import reverse
 
 class Task(models.Model):
     user = models.ForeignKey(
@@ -16,3 +16,9 @@ class Task(models.Model):
 
     class Meta:
         order_with_respect_to = "user"
+    
+    def get_snippet(self):
+        return self.description[0:5]
+
+    def get_absolute_api_url(self):
+        return reverse("todo:api-v1:task-detail", kwargs={"pk": self.pk})
