@@ -12,6 +12,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from .models import Task
 from todo.forms import TaskUpdateForm
+from django.http import HttpResponse 
 
 class TaskCreateView(LoginRequiredMixin, CreateView):
     """
