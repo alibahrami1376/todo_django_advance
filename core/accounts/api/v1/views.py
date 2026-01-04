@@ -1,4 +1,8 @@
-from accounts.api.v1.serializers import RegistrationSerializer,CustomAuthTokenSerializer
+from accounts.api.v1.serializers import(
+  ChangePasswordSerialier,
+  RegistrationSerializer,
+  CustomAuthTokenSerializer,
+) 
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,8 +25,6 @@ class RegistrationApiView(GenericAPIView):
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-
-
 class CustomAuthToken(ObtainAuthToken):
     serializer_class = CustomAuthTokenSerializer
     def post(self, request, *args, **kwargs):
@@ -34,10 +36,21 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({"token": token.key, "user_id": user.pk, "email": user.email})
 
-
 class CustomDiscardAuthToken(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         request.user.auth_token.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class ChangePasswordApiView(GenericAPIView):
+
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerialier
+
+    def put(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"details": "password changed successfully"},status=status.HTTP_200_OK,)

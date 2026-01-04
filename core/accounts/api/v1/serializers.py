@@ -63,3 +63,29 @@ class CustomAuthTokenSerializer(Serializer):
 
         attrs["user"] = user
         return attrs    
+    
+
+
+class ChangePasswordSerialier(Serializer):
+
+    old_password = CharField(required=True)
+    new_password = CharField(required=True)
+    new_password1 = CharField(required=True)
+
+    def validate(self, attrs):
+        if attrs["new_password"] != attrs["new_password1"]:
+            raise ValidationError({"detail": "passwords doesnt match"})
+
+        validate_password(attrs["new_password"], self.context["request"].user)
+
+        user = self.context["request"].user
+        if not user.check_password(attrs["old_password"]):
+            raise ValidationError({"old_password": "Wrong password."})
+
+        return super().validate(attrs)
+    
+    def save(self, **kwargs):
+        user = self.context["request"].user
+        user.set_password(self.validated_data["new_password"]) 
+        user.save() 
+        return user
