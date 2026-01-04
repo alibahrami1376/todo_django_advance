@@ -5,6 +5,9 @@ from accounts.api.v1.views import (
     CustomDiscardAuthToken,
     ChangePasswordApiView,
     ProfileApiView,
+    TestEmailSend,
+    ActivationResendApiView,
+    ActivationApiView,
 )
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
@@ -16,9 +19,16 @@ urlpatterns = [
 
     #registration
     path("registration/",RegistrationApiView.as_view(),name="registration"),
+    #change-password
     path("change-password/",ChangePasswordApiView.as_view(),name="change-password"),
+    # activation
+    path("activation/confirm/<str:token>",ActivationApiView.as_view(),name="activation"),
+    # resend activation
+    path("activation/resend/",ActivationResendApiView.as_view(),name="activation-resend"),
     #profile
     path("profile/",ProfileApiView.as_view(), name="profile"),
+    #emial
+    path("test-email",TestEmailSend.as_view(), name="test-email"),
     #token
     path("token/login/",CustomAuthToken.as_view(),name="token-login"),
     path("token/logout/",CustomDiscardAuthToken.as_view(),name="token-logout"),

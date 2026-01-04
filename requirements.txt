@@ -9,3 +9,4 @@ djangorestframework==3.14.0
 django-filter 
 drf-yasg[validation]
 djangorestframework-simplejwt
+django-mail-templated

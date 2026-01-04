@@ -1,5 +1,12 @@
 
-from rest_framework.serializers import ModelSerializer,CharField,ValidationError,Serializer
+from rest_framework.serializers import (
+    ModelSerializer,
+    CharField,
+    ValidationError,
+    Serializer,
+    EmailField,
+)
+
 from accounts.models import User,Profile
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
@@ -101,3 +108,21 @@ class ProfileSerializer(ModelSerializer):
             "description",
         )
         read_only_fields = ["email"]
+
+
+
+class ActivationResendSerializer(Serializer):
+    email = EmailField(required=True)
+
+    def validate(self, attrs):
+        email = attrs.get("email")
+        try:
+            user_obj = User.objects.get(email=email)
+        except User.DoesNotExist:
+            raise ValidationError({"detail": "user does not exist"})
+        if user_obj.is_verified:
+            raise ValidationError(
+                {"detail": "user is already activated and verified"}
+            )
+        attrs["user"] = user_obj
+        return super().validate(attrs)
