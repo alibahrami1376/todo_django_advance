@@ -37,7 +37,7 @@ class CustomAuthTokenSerializer(Serializer):
         write_only=True,
     )
     token = CharField(label=_("Token"), read_only=True)
-
+  
     def validate(self, attrs):
         email = attrs.get("email")
         password = attrs.get("password")
@@ -48,7 +48,7 @@ class CustomAuthTokenSerializer(Serializer):
                 email=email,
                 password=password,
             )
-
+            
             # The authenticate call simply returns None for is_active=False
             # users. (Assuming the default ModelBackend authentication
             # backend.)

@@ -1,5 +1,9 @@
-from django.urls import path, include
-from accounts.api.v1.views import RegistrationApiView,CustomAuthToken,CustomDiscardAuthToken
+from django.urls import path
+from accounts.api.v1.views import (
+    RegistrationApiView,
+    CustomAuthToken,
+    CustomDiscardAuthToken,
+)
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
