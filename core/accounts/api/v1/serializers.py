@@ -1,6 +1,6 @@
 
 from rest_framework.serializers import ModelSerializer,CharField,ValidationError,Serializer
-from accounts.models import User
+from accounts.models import User,Profile
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
@@ -26,7 +26,6 @@ class RegistrationSerializer(ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password1", None)
         return User.objects.create_user(**validated_data)
-
 
 class CustomAuthTokenSerializer(Serializer):
     email = CharField(label=_("Email"), write_only=True)
@@ -64,8 +63,6 @@ class CustomAuthTokenSerializer(Serializer):
         attrs["user"] = user
         return attrs    
     
-
-
 class ChangePasswordSerialier(Serializer):
 
     old_password = CharField(required=True)
@@ -89,3 +86,18 @@ class ChangePasswordSerialier(Serializer):
         user.set_password(self.validated_data["new_password"]) 
         user.save() 
         return user
+
+class ProfileSerializer(ModelSerializer):
+    email = CharField(source="user.email", read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "image",
+            "description",
+        )
+        read_only_fields = ["email"]

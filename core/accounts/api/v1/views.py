@@ -2,8 +2,9 @@ from accounts.api.v1.serializers import(
   ChangePasswordSerialier,
   RegistrationSerializer,
   CustomAuthTokenSerializer,
+  ProfileSerializer,
 ) 
-from rest_framework.generics import GenericAPIView
+from rest_framework.generics import GenericAPIView,RetrieveUpdateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -43,6 +44,13 @@ class CustomDiscardAuthToken(APIView):
         request.user.auth_token.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+class ProfileApiView(RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ProfileSerializer
+
+
+    def get_object(self):
+        return self.request.user.profile
 
 class ChangePasswordApiView(GenericAPIView):
 
