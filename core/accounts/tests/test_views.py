@@ -1,9 +1,7 @@
 import pytest
 from django.urls import reverse
-from accounts.models import Profile,User
+from accounts.models import Profile, User
 from todo.models import Task
-
-
 
 
 @pytest.fixture
@@ -12,6 +10,7 @@ def common_user():
         email="admin@admin.com", password="a/@1234567", is_verified=True
     )
     return user
+
 
 @pytest.mark.django_db
 class TestRegisterPage:
@@ -39,23 +38,19 @@ class TestRegisterPage:
         data = {
             "email": "newuser@example.com",
             "password1": "ComplexPass123!",
-            "password2": "ComplexPass123!"
+            "password2": "ComplexPass123!",
         }
         response = client.post(url, data)
         assert response.status_code == 302
         assert User.objects.filter(email="newuser@example.com").exists()
         # User should be logged in after registration
         user = User.objects.get(email="newuser@example.com")
-        assert hasattr(user, 'profile')
+        assert hasattr(user, "profile")
 
     def test_register_page_post_invalid(self, client):
         """Test POST request with invalid registration data"""
         url = reverse("accounts:register")
-        data = {
-            "email": "invalid-email",
-            "password1": "pass",
-            "password2": "pass"
-        }
+        data = {"email": "invalid-email", "password1": "pass", "password2": "pass"}
         response = client.post(url, data)
         assert response.status_code == 200  # Returns form with errors
         assert not User.objects.filter(email="invalid-email").exists()
@@ -66,17 +61,18 @@ class TestRegisterPage:
         data = {
             "email": "newuser@example.com",
             "password1": "ComplexPass123!",
-            "password2": "DifferentPass123!"
+            "password2": "DifferentPass123!",
         }
         response = client.post(url, data)
         assert response.status_code == 200  # Returns form with errors
         assert not User.objects.filter(email="newuser@example.com").exists()
 
+
 @pytest.mark.django_db
 class TestCustomLoginView:
     """Test suite for CustomLoginView"""
 
-    def test_login_page_get(self, client,common_user):
+    def test_login_page_get(self, client, common_user):
         """Test GET request to login page"""
         url = reverse("accounts:login")
         response = client.get(url)
@@ -94,10 +90,7 @@ class TestCustomLoginView:
     def test_login_post_valid(self, client, common_user):
         client.logout()
         url = reverse("accounts:login")
-        data = {
-            "username": common_user.email,  
-            "password": "a/@1234567"
-        }
+        data = {"username": common_user.email, "password": "a/@1234567"}
         response = client.post(url, data)
         assert response.status_code == 302
         assert "_auth_user_id" in client.session
@@ -105,22 +98,17 @@ class TestCustomLoginView:
     def test_login_post_invalid(self, client, common_user):
         """Test POST request with invalid login credentials"""
         url = reverse("accounts:login")
-        data = {
-            "email": common_user.email,
-            "password": "wrongpassword"
-        }
+        data = {"email": common_user.email, "password": "wrongpassword"}
         response = client.post(url, data)
-        assert response.status_code == 200  
+        assert response.status_code == 200
 
     def test_login_post_nonexistent_user(self, client):
         """Test login with nonexistent user"""
         url = reverse("accounts:login")
-        data = {
-            "email": "nonexistent@example.com",
-            "password": "somepassword"
-        }
+        data = {"email": "nonexistent@example.com", "password": "somepassword"}
         response = client.post(url, data)
         assert response.status_code == 200  # Returns form with errors
+
 
 @pytest.mark.django_db
 class TestCustomLogoutView:
@@ -142,4 +130,3 @@ class TestCustomLogoutView:
         assert response.url == "/"
         response = client.get(reverse("accounts:login"))
         assert response.status_code == 200
-

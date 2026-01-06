@@ -1,19 +1,14 @@
 import pytest
 from django.urls import reverse
-from django.contrib.auth import get_user_model
 from accounts.models import User, Profile
 from todo.models import Task
-
-User = get_user_model()
 
 
 @pytest.fixture
 def user(db):
     """Create a verified user for testing"""
     user = User.objects.create_user(
-        email="testuser@example.com",
-        password="testpass123",
-        is_verified=True
+        email="testuser@example.com", password="testpass123", is_verified=True
     )
     return user
 
@@ -22,9 +17,7 @@ def user(db):
 def another_user(db):
     """Create another verified user for testing"""
     user = User.objects.create_user(
-        email="anotheruser@example.com",
-        password="testpass123",
-        is_verified=True
+        email="anotheruser@example.com", password="testpass123", is_verified=True
     )
     return user
 
@@ -48,7 +41,7 @@ def task(profile):
         user=profile,
         title="Test Task",
         description="This is a test task description",
-        complete=False
+        complete=False,
     )
 
 
@@ -59,7 +52,7 @@ def completed_task(profile):
         user=profile,
         title="Completed Task",
         description="This is a completed task",
-        complete=True
+        complete=True,
     )
 
 
@@ -89,9 +82,9 @@ class TestTaskListView:
         another_task = Task.objects.create(
             user=another_profile,
             title="Another User Task",
-            description="This is another user's task"
+            description="This is another user's task",
         )
-        
+
         client.force_login(user)
         url = reverse("todo:task_list")
         response = client.get(url)
@@ -124,10 +117,7 @@ class TestTaskCreateView:
         """Test POST request to create a task"""
         client.force_login(user)
         url = reverse("todo:create_task")
-        data = {
-            "title": "New Task",
-            "description": "New task description"
-        }
+        data = {"title": "New Task", "description": "New task description"}
         response = client.post(url, data)
         assert response.status_code == 302
         assert response.url == reverse("todo:task_list")
@@ -139,7 +129,7 @@ class TestTaskCreateView:
         url = reverse("todo:create_task")
         data = {
             "title": "Auto Assigned Task",
-            "description": "This task should be auto-assigned"
+            "description": "This task should be auto-assigned",
         }
         client.post(url, data)
         task = Task.objects.get(title="Auto Assigned Task")
@@ -170,7 +160,7 @@ class TestTaskDetailView:
         other_task = Task.objects.create(
             user=another_profile,
             title="Other User Task",
-            description="Other user's task"
+            description="Other user's task",
         )
         client.force_login(user)
         url = reverse("todo:detail_task", kwargs={"pk": other_task.pk})
@@ -200,10 +190,7 @@ class TestTaskUpdateView:
         """Test POST request to update a task"""
         client.force_login(user)
         url = reverse("todo:edit_task", kwargs={"pk": task.pk})
-        data = {
-            "title": "Updated Task",
-            "description": "Updated description"
-        }
+        data = {"title": "Updated Task", "description": "Updated description"}
         response = client.post(url, data)
         assert response.status_code == 302
         assert response.url == reverse("todo:task_list")
@@ -216,7 +203,7 @@ class TestTaskUpdateView:
         other_task = Task.objects.create(
             user=another_profile,
             title="Other User Task",
-            description="Other user's task"
+            description="Other user's task",
         )
         client.force_login(user)
         url = reverse("todo:edit_task", kwargs={"pk": other_task.pk})
@@ -260,7 +247,7 @@ class TestTaskDeleteView:
         other_task = Task.objects.create(
             user=another_profile,
             title="Other User Task",
-            description="Other user's task"
+            description="Other user's task",
         )
         client.force_login(user)
         url = reverse("todo:delete_task", kwargs={"pk": other_task.pk})
@@ -308,7 +295,7 @@ class TestTaskToggleView:
             user=another_profile,
             title="Other User Task",
             description="Other user's task",
-            complete=False
+            complete=False,
         )
         client.force_login(user)
         url = reverse("todo:toggle_task", kwargs={"pk": other_task.pk})
@@ -316,4 +303,3 @@ class TestTaskToggleView:
         assert response.status_code == 404
         other_task.refresh_from_db()
         assert other_task.complete is False
-

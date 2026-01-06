@@ -8,11 +8,13 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+
 class UserManager(BaseUserManager):
     """
     Custom user model manager where email is the unique identifiers
     for authentication instead of usernames.
     """
+
     def create_user(self, email, password, **extra_fields):
         """
         Create and save a User with the given email and password and extra data.
@@ -40,6 +42,7 @@ class UserManager(BaseUserManager):
             raise ValueError(_("Superuser must have is_superuser=True."))
         return self.create_user(email, password, **extra_fields)
 
+
 class User(AbstractBaseUser, PermissionsMixin):
     """
     Custom User Model for authentication management through email address instead of username
@@ -59,11 +62,13 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-    
+
+
 class Profile(models.Model):
     """
     Profile class for each user which is being created to hold the information
     """
+
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=250)
     last_name = models.CharField(max_length=250)
@@ -75,6 +80,7 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.email
 
+
 @receiver(post_save, sender=User)
 def save_profile(sender, instance, created, **kwargs):
     """
@@ -84,7 +90,7 @@ def save_profile(sender, instance, created, **kwargs):
         Profile.objects.get_or_create(
             user=instance,
             defaults={
-                'first_name': '',
-                'last_name': '',
-            }
+                "first_name": "",
+                "last_name": "",
+            },
         )

@@ -15,3 +15,5 @@ django-mail-templated
 pytest
 pytest-django
 pytest-cov
+black
+flake8

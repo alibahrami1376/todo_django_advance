@@ -6,41 +6,43 @@ from accounts.models import User, Profile
 from django.contrib.auth import get_user_model
 from rest_framework.test import APIClient
 
+
 @pytest.fixture
 def api_client():
     return APIClient()
+
 
 @pytest.fixture
 def user(db):
     """Create a verified user for testing"""
     user = User.objects.create_user(
-        email="testuser@example.com",
-        password="testpass123",
-        is_verified=True
+        email="testuser@example.com", password="testpass123", is_verified=True
     )
     return user
+
 
 @pytest.fixture
 def unverified_user(db):
     """Create an unverified user for testing"""
     user = User.objects.create_user(
-        email="unverified@example.com",
-        password="testpass123",
-        is_verified=False
+        email="unverified@example.com", password="testpass123", is_verified=False
     )
     return user
+
 
 @pytest.fixture
 def profile(user):
     """Create a profile for the user"""
     return user.profile
 
+
 @pytest.fixture
 def authenticated_client(api_client, user):
     """Create an authenticated API client"""
     token, _ = Token.objects.get_or_create(user=user)
-    api_client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
+    api_client.credentials(HTTP_AUTHORIZATION="Token " + token.key)
     return api_client
+
 
 @pytest.mark.django_db
 class TestRegistrationApiView:
@@ -52,7 +54,7 @@ class TestRegistrationApiView:
         data = {
             "email": "newuser@example.com",
             "password": "ComplexPass123!",
-            "password1": "ComplexPass123!"
+            "password1": "ComplexPass123!",
         }
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_201_CREATED
@@ -62,7 +64,7 @@ class TestRegistrationApiView:
         user = User.objects.get(email="newuser@example.com")
         assert user.is_verified is False
         # Profile should be created
-        assert hasattr(user, 'profile')
+        assert hasattr(user, "profile")
 
     def test_registration_password_mismatch(self, api_client):
         """Test registration with mismatched passwords"""
@@ -70,7 +72,7 @@ class TestRegistrationApiView:
         data = {
             "email": "newuser@example.com",
             "password": "ComplexPass123!",
-            "password1": "DifferentPass123!"
+            "password1": "DifferentPass123!",
         }
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -82,7 +84,7 @@ class TestRegistrationApiView:
         data = {
             "email": user.email,
             "password": "ComplexPass123!",
-            "password1": "ComplexPass123!"
+            "password1": "ComplexPass123!",
         }
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -90,11 +92,7 @@ class TestRegistrationApiView:
     def test_registration_weak_password(self, api_client):
         """Test registration with weak password"""
         url = reverse("accounts:api-v1:registration")
-        data = {
-            "email": "newuser@example.com",
-            "password": "123",
-            "password1": "123"
-        }
+        data = {"email": "newuser@example.com", "password": "123", "password1": "123"}
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         # Password validation errors are returned in non_field_errors
@@ -108,10 +106,7 @@ class TestCustomAuthToken:
     def test_token_login_success(self, api_client, user):
         """Test successful token authentication"""
         url = reverse("accounts:api-v1:token-login")
-        data = {
-            "email": user.email,
-            "password": "testpass123"
-        }
+        data = {"email": user.email, "password": "testpass123"}
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_200_OK
         assert "token" in response.data
@@ -122,20 +117,14 @@ class TestCustomAuthToken:
     def test_token_login_invalid_credentials(self, api_client, user):
         """Test token login with invalid credentials"""
         url = reverse("accounts:api-v1:token-login")
-        data = {
-            "email": user.email,
-            "password": "wrongpassword"
-        }
+        data = {"email": user.email, "password": "wrongpassword"}
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_token_login_unverified_user(self, api_client, unverified_user):
         """Test that unverified users cannot login"""
         url = reverse("accounts:api-v1:token-login")
-        data = {
-            "email": unverified_user.email,
-            "password": "testpass123"
-        }
+        data = {"email": unverified_user.email, "password": "testpass123"}
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert "details" in response.data
@@ -143,10 +132,7 @@ class TestCustomAuthToken:
     def test_token_login_nonexistent_user(self, api_client):
         """Test token login with nonexistent user"""
         url = reverse("accounts:api-v1:token-login")
-        data = {
-            "email": "nonexistent@example.com",
-            "password": "somepassword"
-        }
+        data = {"email": "nonexistent@example.com", "password": "somepassword"}
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -194,7 +180,7 @@ class TestProfileApiView:
         data = {
             "first_name": "Updated",
             "last_name": "Name",
-            "description": "Updated description"
+            "description": "Updated description",
         }
         response = authenticated_client.put(url, data)
         assert response.status_code == status.HTTP_200_OK
@@ -215,10 +201,7 @@ class TestProfileApiView:
     def test_profile_email_read_only(self, authenticated_client, user):
         """Test that email field is read-only"""
         url = reverse("accounts:api-v1:profile")
-        data = {
-            "first_name": "Test",
-            "email": "hacked@example.com"
-        }
+        data = {"first_name": "Test", "email": "hacked@example.com"}
         response = authenticated_client.patch(url, data)
         assert response.status_code == status.HTTP_200_OK
         # Email should remain unchanged
@@ -236,7 +219,7 @@ class TestChangePasswordApiView:
         data = {
             "old_password": "oldpass",
             "new_password": "NewPass123!",
-            "new_password1": "NewPass123!"
+            "new_password1": "NewPass123!",
         }
         response = api_client.put(url, data)
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
@@ -249,7 +232,7 @@ class TestChangePasswordApiView:
         data = {
             "old_password": old_password,
             "new_password": new_password,
-            "new_password1": new_password
+            "new_password1": new_password,
         }
         response = authenticated_client.put(url, data)
         assert response.status_code == status.HTTP_200_OK
@@ -265,7 +248,7 @@ class TestChangePasswordApiView:
         data = {
             "old_password": "wrongpassword",
             "new_password": "NewPass123!",
-            "new_password1": "NewPass123!"
+            "new_password1": "NewPass123!",
         }
         response = authenticated_client.put(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -277,7 +260,7 @@ class TestChangePasswordApiView:
         data = {
             "old_password": "testpass123",
             "new_password": "NewPass123!",
-            "new_password1": "DifferentPass123!"
+            "new_password1": "DifferentPass123!",
         }
         response = authenticated_client.put(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -289,7 +272,7 @@ class TestChangePasswordApiView:
         data = {
             "old_password": "testpass123",
             "new_password": "123",
-            "new_password1": "123"
+            "new_password1": "123",
         }
         response = authenticated_client.put(url, data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -310,10 +293,10 @@ class TestActivationApiView:
         """Test activation of already verified user"""
         from core.settings import SECRET_KEY
         import jwt
-        
+
         # Create a token with user_id as expected by the view
         token = jwt.encode({"user_id": user.pk}, SECRET_KEY, algorithm="HS256")
-        
+
         url = reverse("accounts:api-v1:activation", kwargs={"token": token})
         response = api_client.get(url)
         # Should return message that account is already verified
@@ -324,10 +307,12 @@ class TestActivationApiView:
         """Test successful account activation"""
         from core.settings import SECRET_KEY
         import jwt
-        
+
         # Create a token with user_id as expected by the view
-        token = jwt.encode({"user_id": unverified_user.pk}, SECRET_KEY, algorithm="HS256")
-        
+        token = jwt.encode(
+            {"user_id": unverified_user.pk}, SECRET_KEY, algorithm="HS256"
+        )
+
         url = reverse("accounts:api-v1:activation", kwargs={"token": token})
         response = api_client.get(url)
         assert response.status_code == status.HTTP_200_OK
@@ -371,10 +356,7 @@ class TestJWTAuthentication:
     def test_jwt_create_token(self, api_client, user):
         """Test JWT token creation"""
         url = reverse("accounts:api-v1:token_obtain_pair")
-        data = {
-            "email": user.email,
-            "password": "testpass123"
-        }
+        data = {"email": user.email, "password": "testpass123"}
         response = api_client.post(url, data)
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
@@ -384,13 +366,10 @@ class TestJWTAuthentication:
         """Test JWT token refresh"""
         # First get tokens
         url = reverse("accounts:api-v1:token_obtain_pair")
-        data = {
-            "email": user.email,
-            "password": "testpass123"
-        }
+        data = {"email": user.email, "password": "testpass123"}
         response = api_client.post(url, data)
         refresh_token = response.data["refresh"]
-        
+
         # Then refresh
         url = reverse("accounts:api-v1:token_refresh")
         data = {"refresh": refresh_token}
@@ -402,13 +381,10 @@ class TestJWTAuthentication:
         """Test JWT token verification"""
         # First get tokens
         url = reverse("accounts:api-v1:token_obtain_pair")
-        data = {
-            "email": user.email,
-            "password": "testpass123"
-        }
+        data = {"email": user.email, "password": "testpass123"}
         response = api_client.post(url, data)
         access_token = response.data["access"]
-        
+
         # Then verify
         url = reverse("accounts:api-v1:token_verify")
         data = {"token": access_token}

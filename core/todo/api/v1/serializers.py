@@ -1,7 +1,7 @@
-
 from rest_framework import serializers
 from todo.models import Task
 from accounts.models import Profile
+
 
 class TaskSerializer(serializers.ModelSerializer):
     snippet = serializers.ReadOnlyField(source="get_snippet")
@@ -11,26 +11,26 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = [
-            'id',
-            'user',
-            'description',
-            'snippet',
-            'title',
-            'complete',
+            "id",
+            "user",
+            "description",
+            "snippet",
+            "title",
+            "complete",
             "relative_url",
             "absolute_url",
             "created_date",
-            'updated_date',
+            "updated_date",
         ]
-        read_only_fields = ["user",'id']
+        read_only_fields = ["user", "id"]
 
     def get_abs_url(self, obj):
-       
+
         request = self.context.get("request")
         if not request:
             return None
-        return request.build_absolute_uri(obj.pk)   
-     
+        return request.build_absolute_uri(obj.pk)
+
     def to_representation(self, instance):
         request = self.context.get("request")
         rep = super().to_representation(instance)
