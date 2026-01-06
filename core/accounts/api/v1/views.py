@@ -18,7 +18,7 @@ from accounts.models import User
 from accounts.api.utils import EmailThread
 from rest_framework_simplejwt.tokens import RefreshToken
 import jwt
-from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError
+from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, DecodeError
 from core.settings import SECRET_KEY
 
 class RegistrationApiView(GenericAPIView):
@@ -118,7 +118,18 @@ class ActivationApiView(APIView):
                 {"details": "token is not valid"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        user_obj = User.objects.get(pk=user_id)
+        except DecodeError:
+            return Response(
+                {"details": "token is not valid"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            user_obj = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            return Response(
+                {"details": "user not found"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         if user_obj.is_verified:
             return Response({"details": "your account has already been verified"})
         user_obj.is_verified = True
