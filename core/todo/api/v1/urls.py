@@ -1,4 +1,3 @@
-
 from rest_framework.routers import DefaultRouter
 from todo.api.v1.views import TaskModelViewSet
 
@@ -15,4 +14,3 @@ urlpatterns = router.urls
 # #     path("list/",TaskList.as_view(),name="task-list"),
 # #     path("task/<int:id>",TaskDetail.as_view(),name="task-detaile"),
 # # ]
-

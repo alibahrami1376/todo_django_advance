@@ -8,14 +8,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
-
-
 class TaskModelViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated, IsTaskOwner]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     ordering_fields = ["created_date"]
     search_fields = ["title", "description"]
-    filterset_fields = {'complete':["exact"]}
+    filterset_fields = {"complete": ["exact"]}
     serializer_class = TaskSerializer
     pagination_class = DefaultPagination
 
@@ -24,4 +22,3 @@ class TaskModelViewSet(viewsets.ModelViewSet):
         if not profile:
             return Task.objects.none()
         return Task.objects.filter(user=profile)
-        

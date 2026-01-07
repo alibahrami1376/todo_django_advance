@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 
+
 class Task(models.Model):
     user = models.ForeignKey(
         "accounts.Profile", on_delete=models.CASCADE, null=True, blank=True
@@ -16,7 +17,7 @@ class Task(models.Model):
 
     class Meta:
         order_with_respect_to = "user"
-    
+
     def get_snippet(self):
         return self.description[0:5]
 

@@ -1,4 +1,3 @@
-
 from rest_framework.serializers import (
     ModelSerializer,
     CharField,
@@ -7,10 +6,11 @@ from rest_framework.serializers import (
     EmailField,
 )
 
-from accounts.models import User,Profile
+from accounts.models import User, Profile
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
+
 
 class RegistrationSerializer(ModelSerializer):
     password1 = CharField(max_length=255, write_only=True)
@@ -34,6 +34,7 @@ class RegistrationSerializer(ModelSerializer):
         validated_data.pop("password1", None)
         return User.objects.create_user(**validated_data)
 
+
 class CustomAuthTokenSerializer(Serializer):
     email = CharField(label=_("Email"), write_only=True)
     password = CharField(
@@ -43,7 +44,7 @@ class CustomAuthTokenSerializer(Serializer):
         write_only=True,
     )
     token = CharField(label=_("Token"), read_only=True)
-  
+
     def validate(self, attrs):
         email = attrs.get("email")
         password = attrs.get("password")
@@ -54,7 +55,7 @@ class CustomAuthTokenSerializer(Serializer):
                 email=email,
                 password=password,
             )
-            
+
             # The authenticate call simply returns None for is_active=False
             # users. (Assuming the default ModelBackend authentication
             # backend.)
@@ -68,8 +69,9 @@ class CustomAuthTokenSerializer(Serializer):
             raise ValidationError(msg, code="authorization")
 
         attrs["user"] = user
-        return attrs    
-    
+        return attrs
+
+
 class ChangePasswordSerialier(Serializer):
 
     old_password = CharField(required=True)
@@ -87,12 +89,13 @@ class ChangePasswordSerialier(Serializer):
             raise ValidationError({"old_password": "Wrong password."})
 
         return super().validate(attrs)
-    
+
     def save(self, **kwargs):
         user = self.context["request"].user
-        user.set_password(self.validated_data["new_password"]) 
-        user.save() 
+        user.set_password(self.validated_data["new_password"])
+        user.save()
         return user
+
 
 class ProfileSerializer(ModelSerializer):
     email = CharField(source="user.email", read_only=True)
@@ -110,7 +113,6 @@ class ProfileSerializer(ModelSerializer):
         read_only_fields = ["email"]
 
 
-
 class ActivationResendSerializer(Serializer):
     email = EmailField(required=True)
 
@@ -121,8 +123,6 @@ class ActivationResendSerializer(Serializer):
         except User.DoesNotExist:
             raise ValidationError({"detail": "user does not exist"})
         if user_obj.is_verified:
-            raise ValidationError(
-                {"detail": "user is already activated and verified"}
-            )
+            raise ValidationError({"detail": "user is already activated and verified"})
         attrs["user"] = user_obj
         return super().validate(attrs)
