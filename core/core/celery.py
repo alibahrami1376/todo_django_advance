@@ -15,13 +15,10 @@ app = Celery("core")
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 
-
-
 app.conf.beat_schedule = {
-    'clear-done-tasks-every-10-min': {
-        'task': 'todo.tasks.clear_done_tasks',
-        'schedule': crontab(minute='*/10'),
-        'schedule':30,
+    "clear-done-tasks-every-10-min": {
+        "task": "todo.tasks.clear_done_tasks",
+        "schedule": crontab(minute="*/10"),
     },
 }
 
