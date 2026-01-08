@@ -9,11 +9,21 @@ djangorestframework==3.14.0
 django-filter 
 drf-yasg[validation]
 djangorestframework-simplejwt
+
+
+# email third party modules
 django-mail-templated
 
 #testing
+# refactoring 
 pytest
 pytest-django
 pytest-cov
 black
 flake8
+Faker
+
+# background proccess and cache
+celery
+redis
+django-redis
