@@ -33,7 +33,15 @@ services:
       - redis
       - backend
 
-      
+  beat:
+    build: .
+    container_name: celery_beat
+    command: celery -A core beat --loglevel=info
+    volumes:
+      - ./core:/app
+    depends_on:
+      - redis
+      - backend
   smtp4dev:
       image: rnwood/smtp4dev:v3
       restart: always
