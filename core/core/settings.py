@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "todo",
+    "weather",
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
@@ -177,3 +178,19 @@ EMAIL_PORT = 25
 
 # celery configs
 CELERY_BROKER_URL = "redis://redis:6379/1"
+
+
+# Cache configuration with Redis
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://redis:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        },
+        "KEY_PREFIX": "todo_cache",
+        "TIMEOUT": 1200,  
+    }
+}
+
+OPENWEATHER_API_KEY = config("OPENWEATHER_API_KEY", default="aacf0bb4d78a8e3d5015d10970f2b3aa")

@@ -22,6 +22,7 @@ pytest-cov
 black
 flake8
 Faker
+requests
 
 # background proccess and cache
 celery
