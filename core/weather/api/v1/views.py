@@ -5,7 +5,7 @@ from rest_framework import status
 from weather.services import WeatherService
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 @permission_classes([AllowAny])
 def get_weather(request):
     """
@@ -13,20 +13,16 @@ def get_weather(request):
     Query parameter: city (required)
     Example: /api/weather/v1/?city=Tehran
     """
-    city = request.query_params.get('city')
-    
+    city = request.query_params.get("city")
+
     if not city:
         return Response(
-            {"error": "City parameter is required"},
-            status=status.HTTP_400_BAD_REQUEST
+            {"error": "City parameter is required"}, status=status.HTTP_400_BAD_REQUEST
         )
-    
+
     weather_data = WeatherService.get_weather(city)
-    
+
     if "error" in weather_data:
-        return Response(
-            weather_data,
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
+        return Response(weather_data, status=status.HTTP_400_BAD_REQUEST)
+
     return Response(weather_data, status=status.HTTP_200_OK)

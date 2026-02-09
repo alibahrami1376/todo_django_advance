@@ -189,8 +189,10 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         },
         "KEY_PREFIX": "todo_cache",
-        "TIMEOUT": 1200,  
+        "TIMEOUT": 1200,
     }
 }
 
-OPENWEATHER_API_KEY = config("OPENWEATHER_API_KEY", default="aacf0bb4d78a8e3d5015d10970f2b3aa")
+OPENWEATHER_API_KEY = config(
+    "OPENWEATHER_API_KEY", default="aacf0bb4d78a8e3d5015d10970f2b3aa"
+)
